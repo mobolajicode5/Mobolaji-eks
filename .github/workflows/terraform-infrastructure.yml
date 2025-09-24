@@ -47,7 +47,12 @@ jobs:
       if: github.event_name == 'pull_request'
     
     - name: Terraform Apply
-      run: terraform apply -auto-approve -var="environment_name=innovatemart"
+      run: |
+        terraform apply -auto-approve -var="environment_name=innovatemart" || {
+          echo "Terraform apply failed. Showing plan for debugging:"
+          terraform plan -var="environment_name=innovatemart"
+          exit 1
+        }
       if: github.ref == 'refs/heads/main'
     
     - name: Output Cluster Info
