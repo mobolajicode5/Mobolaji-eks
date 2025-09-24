@@ -1,13 +1,12 @@
-resource "kubernetes_namespace_v1" "adot" {
-  metadata {
-    name = "opentelemetry-operator-system"
-
-    labels = {
-      # Prerequisite for EKS addon
-      "control-plane" = "controller-manager"
-    }
-  }
-}
+# ADOT resources disabled to avoid Kubernetes provider connection issues
+# resource "kubernetes_namespace_v1" "adot" {
+#   metadata {
+#     name = "opentelemetry-operator-system"
+#     labels = {
+#       "control-plane" = "controller-manager"
+#     }
+#   }
+# }
 
 # ADOT addon disabled to avoid cert-manager dependency
 # resource "aws_eks_addon" "adot" {
@@ -20,7 +19,7 @@ resource "kubernetes_namespace_v1" "adot" {
 #   depends_on = [module.eks_blueprints_addons]
 # }
 
-resource "kubernetes_role_v1" "adot" {
+# resource "kubernetes_role_v1" "adot" {
   metadata {
     name      = "eks:addon-manager"
     namespace = kubernetes_namespace_v1.adot.metadata[0].name
@@ -84,7 +83,7 @@ resource "kubernetes_role_v1" "adot" {
   }
 }
 
-resource "kubernetes_role_binding_v1" "adot" {
+# resource "kubernetes_role_binding_v1" "adot" {
   metadata {
     name      = "eks:addon-manager"
     namespace = kubernetes_namespace_v1.adot.metadata[0].name
@@ -102,7 +101,7 @@ resource "kubernetes_role_binding_v1" "adot" {
   }
 }
 
-resource "kubernetes_cluster_role_v1" "adot" {
+# resource "kubernetes_cluster_role_v1" "adot" {
   metadata {
     name = "eks:addon-manager-otel"
   }
@@ -233,7 +232,7 @@ resource "kubernetes_cluster_role_v1" "adot" {
   }
 }
 
-resource "kubernetes_cluster_role_binding_v1" "adot" {
+# resource "kubernetes_cluster_role_binding_v1" "adot" {
   metadata {
     name = "eks:addon-manager-otel"
   }
