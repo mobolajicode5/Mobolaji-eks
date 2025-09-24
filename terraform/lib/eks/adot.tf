@@ -9,22 +9,16 @@ resource "kubernetes_namespace_v1" "adot" {
   }
 }
 
-resource "aws_eks_addon" "adot" {
-  cluster_name                = module.eks_cluster.cluster_name
-  addon_name                  = "adot"
-  resolve_conflicts_on_create = "OVERWRITE"
-  resolve_conflicts_on_update = "OVERWRITE"
-  preserve                    = false
-
-  configuration_values = var.opentelemetry_enabled ? local.collector_configuration : "{\"collector\": {}}"
-
-  tags = {
-    RoleVersion        = try(kubernetes_role_v1.adot.metadata[0].resource_version, ""),
-    ClusterRoleVersion = try(kubernetes_cluster_role_v1.adot.metadata[0].resource_version, "")
-  }
-
-  depends_on = [module.eks_blueprints_addons]
-}
+# ADOT addon disabled to avoid cert-manager dependency
+# resource "aws_eks_addon" "adot" {
+#   cluster_name                = module.eks_cluster.cluster_name
+#   addon_name                  = "adot"
+#   resolve_conflicts_on_create = "OVERWRITE"
+#   resolve_conflicts_on_update = "OVERWRITE"
+#   preserve                    = false
+#   configuration_values = var.opentelemetry_enabled ? local.collector_configuration : "{\"collector\": {}}"
+#   depends_on = [module.eks_blueprints_addons]
+# }
 
 resource "kubernetes_role_v1" "adot" {
   metadata {

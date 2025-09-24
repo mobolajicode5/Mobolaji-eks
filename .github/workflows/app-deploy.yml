@@ -1,0 +1,45 @@
+name: Application Deploy
+
+on:
+  workflow_dispatch:
+  workflow_run:
+    workflows: ["Terraform Infrastructure"]
+    types: [completed]
+    branches: [main]
+
+env:
+  AWS_REGION: us-west-2
+  TERRAFORM_DIR: terraform/eks/minimal
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' || github.event_name == 'workflow_dispatch' }}
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.5.0
+    
+    - uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+    
+    - name: Configure kubectl
+      working-directory: ${{ env.TERRAFORM_DIR }}
+      run: |
+        terraform init
+        KUBECTL_CMD=$(terraform output -raw configure_kubectl)
+        eval $KUBECTL_CMD
+    
+    - name: Deploy Application
+      run: |
+        kubectl apply -f https://github.com/aws-containers/retail-store-sample-app/releases/latest/download/kubernetes.yaml
+        kubectl wait --for=condition=available --timeout=600s deployment --all
+    
+    - name: Get Application URL
+      run: kubectl get svc ui

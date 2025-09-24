@@ -1,0 +1,1 @@
+# Backend configuration moved to versions.tf

@@ -1,0 +1,4 @@
+# This file has been replaced by separate workflows:
+# - terraform-infrastructure.yml
+# - terraform-destroy.yml  
+# - app-deploy.yml

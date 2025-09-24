@@ -1,0 +1,53 @@
+name: Terraform Infrastructure
+
+on:
+  push:
+    branches: [ main ]
+    paths: [ 'terraform/eks/minimal/**' ]
+  pull_request:
+    branches: [ main ]
+    paths: [ 'terraform/eks/minimal/**' ]
+
+env:
+  AWS_REGION: us-west-2
+  TERRAFORM_DIR: terraform/eks/minimal
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    
+    defaults:
+      run:
+        working-directory: ${{ env.TERRAFORM_DIR }}
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - uses: hashicorp/setup-terraform@v3
+      with:
+        terraform_version: 1.5.0
+    
+    - uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+    
+    - name: Terraform Init
+      run: terraform init
+    
+    - name: Terraform Plan
+      run: terraform plan -var-file="terraform.tfvars"
+      if: github.event_name == 'pull_request'
+    
+    - name: Terraform Apply
+      run: terraform apply -auto-approve -var-file="terraform.tfvars"
+      if: github.ref == 'refs/heads/main'
+    
+    - name: Output Cluster Info
+      if: github.ref == 'refs/heads/main'
+      run: |
+        echo "Cluster Name: $(terraform output -raw cluster_name)"
+        echo "Cluster Endpoint: $(terraform output -raw cluster_endpoint)"
+        echo "Configure kubectl: $(terraform output -raw configure_kubectl)"
+        echo "Developer Access Key: $(terraform output -raw developer_access_key_id)"
