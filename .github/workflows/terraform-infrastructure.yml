@@ -43,11 +43,11 @@ jobs:
       run: terraform init
     
     - name: Terraform Plan
-      run: terraform plan -var-file="terraform.tfvars"
+      run: terraform plan -var="environment_name=innovatemart"
       if: github.event_name == 'pull_request'
     
     - name: Terraform Apply
-      run: terraform apply -auto-approve -var-file="terraform.tfvars"
+      run: terraform apply -auto-approve -var="environment_name=innovatemart"
       if: github.ref == 'refs/heads/main'
     
     - name: Output Cluster Info
