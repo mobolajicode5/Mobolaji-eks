@@ -38,7 +38,8 @@ output "configure_kubectl" {
   value       = "aws eks --region ${data.aws_region.current.name} update-kubeconfig --name ${module.eks_cluster.cluster_name}"
 }
 
-output "adot_namespace" {
-  description = "Namespace where ADOT is deployed"
-  value       = kubernetes_namespace_v1.adot.metadata[0].name
-}
+# ADOT namespace output disabled
+# output "adot_namespace" {
+#   description = "Namespace where ADOT is deployed"
+#   value       = "adot-disabled"
+# }
