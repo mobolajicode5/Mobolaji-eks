@@ -9,7 +9,7 @@ on:
   workflow_dispatch:
 
 env:
-  AWS_REGION: us-west-2
+  AWS_REGION: eu-west-1
   TERRAFORM_DIR: terraform/eks/minimal
 
 jobs:
