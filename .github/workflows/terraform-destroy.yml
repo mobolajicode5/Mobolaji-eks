@@ -39,3 +39,10 @@ jobs:
     
     - name: Terraform Destroy
       run: terraform destroy -auto-approve -var-file="terraform.tfvars"
+    
+    - name: Cleanup S3 Bucket and DynamoDB Table
+      run: |
+        aws s3api delete-objects --bucket innovatemart-terraform-state --delete "$(aws s3api list-object-versions --bucket innovatemart-terraform-state --query '{Objects: Versions[].{Key:Key,VersionId:VersionId}}')" || true
+        aws s3api delete-objects --bucket innovatemart-terraform-state --delete "$(aws s3api list-object-versions --bucket innovatemart-terraform-state --query '{Objects: DeleteMarkers[].{Key:Key,VersionId:VersionId}}')" || true
+        aws s3 rb s3://innovatemart-terraform-state --force || true
+        aws dynamodb delete-table --table-name terraform-state-lock --region eu-west-1 || true

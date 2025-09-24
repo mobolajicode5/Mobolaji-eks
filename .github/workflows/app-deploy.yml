@@ -35,10 +35,11 @@ jobs:
         terraform init
         KUBECTL_CMD=$(terraform output -raw configure_kubectl)
         eval $KUBECTL_CMD
+        kubectl cluster-info
     
     - name: Deploy Application
       run: |
-        kubectl apply -f https://github.com/aws-containers/retail-store-sample-app/releases/latest/download/kubernetes.yaml
+        kubectl apply -f https://github.com/aws-containers/retail-store-sample-app/releases/latest/download/kubernetes.yaml --validate=false
         kubectl wait --for=condition=available --timeout=600s deployment --all
     
     - name: Get Application URL
