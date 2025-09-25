@@ -15,3 +15,9 @@ variable "opentelemetry_enabled" {
   type        = bool
   default     = false
 }
+
+# variable "cluster_version" {
+#   description = "Kubernetes version for EKS cluster"
+#   type        = string
+#   default     = "1.30"
+# }

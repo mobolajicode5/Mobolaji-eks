@@ -1,8 +1,6 @@
 name: Terraform Infrastructure
 
 on:
-  push:
-    branches: [ main ]
   pull_request:
     branches: [ main ]
     paths: [ 'terraform/eks/minimal/**' ]
